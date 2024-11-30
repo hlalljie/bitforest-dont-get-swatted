@@ -2,16 +2,18 @@ name: Deploy to itch.io
 on:
   push:
     branches:
-      - deployment-fix  # or whatever branch you want to trigger deploys
+      - main  # or whatever branch you want to trigger deploys
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    container:
-      options: --dns 8.8.8.8 --dns 1.1.1.1
     steps:
       - uses: actions/checkout@v2
       
-      # Optional: Add your build steps here if needed
+      # Add DNS configuration step before butler
+      - name: Configure DNS
+        run: |
+          echo "nameserver 8.8.8.8" | sudo tee -a /etc/resolv.conf
+          echo "nameserver 1.1.1.1" | sudo tee -a /etc/resolv.conf
       
       - uses: yeslayla/butler-publish-itchio-action@v1.0.3
         env:
