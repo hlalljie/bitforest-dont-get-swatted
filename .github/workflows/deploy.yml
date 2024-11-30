@@ -2,7 +2,7 @@ name: Deploy to itch.io
 on:
   push:
     branches:
-      - main  # or whatever branch you want to trigger deploys
+      - deloypment-fix # or whatever branch you want to trigger deploys
 jobs:
   deploy:
     runs-on: ubuntu-latest
