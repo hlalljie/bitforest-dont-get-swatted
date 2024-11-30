@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - deployment-fix  # Added this branch for testing fixes
   workflow_dispatch:    # Manual trigger via UI
 jobs:
   deploy:
