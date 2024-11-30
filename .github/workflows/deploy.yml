@@ -2,11 +2,12 @@ name: Deploy to itch.io
 on:
   push:
     branches:
-      - main  # or whatever branch you want to trigger deploys
-
+      - deployment-fix  # or whatever branch you want to trigger deploys
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    container:
+      options: --dns 8.8.8.8 --dns 1.1.1.1
     steps:
       - uses: actions/checkout@v2
       
