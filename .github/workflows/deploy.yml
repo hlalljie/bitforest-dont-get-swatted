@@ -2,24 +2,20 @@ name: Deploy to itch.io
 on:
   push:
     branches:
-      - deloypment-fix # or whatever branch you want to trigger deploys
+      - main
+      - deployment-fix  # Added this branch for testing fixes
+  workflow_dispatch:    # Manual trigger via UI
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       
-      # Add DNS configuration step before butler
-      - name: Configure DNS
-        run: |
-          echo "nameserver 8.8.8.8" | sudo tee -a /etc/resolv.conf
-          echo "nameserver 1.1.1.1" | sudo tee -a /etc/resolv.conf
-      
       - uses: yeslayla/butler-publish-itchio-action@v1.0.3
         env:
           BUTLER_CREDENTIALS: ${{ secrets.BUTLER_API_KEY }}
-          CHANNEL: web  # or whatever channel you want to push to
+          CHANNEL: web
           ITCH_GAME: dont-get-swatted
           ITCH_USER: haydondo
-          PACKAGE: src    # path to your game files, '.' if in root
+          PACKAGE: src
           VERSION: ${{ github.sha }}
