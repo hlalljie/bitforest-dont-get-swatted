@@ -291,6 +291,7 @@ const splashUI = new (class extends _SceneUI {
         // TODO: play with the easter-egg initial prompt
         event.preventDefault();
         this.dispatchUserChoice({
+          loadScreen: 'prompts',
           startType: 'alt',
         });
         break;
@@ -300,9 +301,15 @@ const splashUI = new (class extends _SceneUI {
         break;
       case 'itch-link':
         break;
+      case 'achievements-button':
+        event.preventDefault();
+        this.dispatchUserChoice({
+          loadScreen: 'achievements',
+        });
       default:
         event.preventDefault();
         this.dispatchUserChoice({
+          loadScreen: 'prompts',
           startType: 'default',
         });
         break;
@@ -453,6 +460,52 @@ const promptsUI = (window.promptsUI = new (class extends _SceneUI {
   }
 })());
 
+const achievementsUI = new (class extends _SceneUI {
+  createItem(item) {
+    let li = document.createElement('li');
+    li.id = item.id;
+    li.classList.add('ending-item')
+    li.classList.toggle('checked', item.got);
+    li.dataset.type = item.type
+    li.textContent = item.got ? item.displayName : '???';
+    return li;
+  }
+  async start({ endings }) {
+    this.render(endings);
+    await super.start();
+  }
+  render(endingsDictionary) {
+    console.log("achievementsUI, render with endings:", endingsDictionary);
+    let listElem = document.getElementById('endings-list');
+    listElem.textContent = "";
+
+    let items = [];
+    for (let [id, item] of Object.entries(endingsDictionary)) {
+      items.push({ id: id.replace(/\s+/g, "-"), ...item });
+    }
+    items.sort((a, b) => b.got);
+    let fragment = document.createDocumentFragment();
+    for (let item of items) {
+      fragment.appendChild(this.createItem(item));
+    }
+    listElem.appendChild(fragment);
+
+    const completeCount = items.filter(item => item.got).length;
+    const totalCount = items.length;
+    document.getElementById("endings-progress").textContent = `${completeCount}/${totalCount} Complete`;
+  }
+  handleEvent(event) {
+    switch (event.target.id) {
+      default:
+        event.preventDefault();
+        this.dispatchUserChoice({
+          action: 'restart',
+        });
+        break;
+    }
+  }
+})();
+
 export class UI {
   constructor(assetsMap) {
     this.assets = assetsMap;
@@ -589,6 +642,9 @@ export class UI {
       case 'gameover':
         await gameoverUI.stop();
         break;
+      case 'achievements':
+        await achievementsUI.stop();
+        break;
     }
     if (!elem.classList.contains('hidden')) {
       return new Promise((resolve) => {
@@ -604,7 +660,7 @@ export class UI {
     }
     return Promise.resolve();
   }
-  async enterScene(id) {
+  async enterScene(id, params = {}) {
     const elem = document.getElementById(id);
     elem.classList.add('transitioning');
     let uiScene;
@@ -619,10 +675,13 @@ export class UI {
       case 'gameover':
         uiScene = gameoverUI;
         break;
+      case 'achievements':
+        uiScene = achievementsUI;
+        break;
       default:
         throw new Error(`Unknown scene: ${id}`);
     }
-    await uiScene.start();
+    await uiScene.start(params);
 
     if (elem.classList.contains('hidden')) {
       await new Promise((resolve) => {

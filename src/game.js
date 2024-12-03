@@ -17,14 +17,13 @@ export class Game {
     this.ui = ui;
     this.currentScene = null;
 
-    const splashScene = new SplashScene(this);
-    const choicesScene = new ChoicesScene(this);
-    const gameoverScene = new GameOverScene(this);
-
     this.scenesMap = new Map();
-    this.scenesMap.set(splashScene.id, splashScene);
-    this.scenesMap.set(choicesScene.id, choicesScene);
-    this.scenesMap.set(gameoverScene.id, gameoverScene);
+    for (let SceneClass of [
+      SplashScene, ChoicesScene, GameOverScene, AchievementsScene
+    ]) {
+      const scene = new SceneClass(this);
+      this.scenesMap.set(scene.id, scene);
+    }
   }
 
   async start() {
@@ -52,6 +51,15 @@ export class Game {
    */
   saveToLocal(saveData, name) {
     localStorage.setItem(name, JSON.stringify(saveData));
+  }
+
+  /**
+   * Fetches data from local storage
+   * @param {string} storageName item name in local storage to get
+   */
+  retrieveFromLocal(name) {
+    let jsonData = localStorage.getItem(name) || '{}';
+    return JSON.parse(jsonData);
   }
 }
 
@@ -263,10 +271,9 @@ class SplashScene extends _Scene {
   id = 'splash';
 
   handleEvent(event) {
-    if (event.type == 'user-choice') {
-      // Advance to next scene
-      console.log('Got user choice:');
-      this.game.switchScene('prompts', { ...event.detail });
+    if (event.type == 'user-choice' && event.detail.loadScreen) {
+      // Advance to indicated scene
+      this.game.switchScene(event.detail.loadScreen, { ...event.detail });
     }
   }
 
@@ -293,7 +300,6 @@ class GameOverScene extends _Scene {
   handleEvent(event) {
     if (event.type == 'user-choice') {
       // Advance to next scene
-      console.log('Got user choice:');
       const nextAction = event.detail.action;
       let startType;
       if (nextAction == 'restart') {
@@ -327,5 +333,40 @@ class GameOverScene extends _Scene {
     console.log(`exiting ${this.id} scene`);
     document.removeEventListener('user-choice', this);
     await this.ui.exitScene('gameover');
+  }
+}
+
+class AchievementsScene extends _Scene {
+  id = 'achievements';
+
+  handleEvent(event) {
+    if (event.type == 'user-choice') {
+      // Advance to next scene
+      console.log('Got user choice:');
+      const nextAction = event.detail.action;
+      let startType;
+      if (nextAction == 'restart') {
+        // Go back to the menu/splash scene to restart
+        this.game.switchScene('splash');
+      }
+    }
+  }
+
+  async enter(params) {
+    let savedEndings = this.game.retrieveFromLocal('endings');
+    console.log("retrieveFromLocal('endings')", savedEndings);
+    super.enter();
+    console.log(`entering ${this.id} scene`);
+    this.ui.updateBackground('');
+    this.ui.updateBackgroundAudio();
+
+    await this.ui.enterScene('achievements', { endings: savedEndings });
+    document.addEventListener('user-choice', this);
+  }
+
+  async exit() {
+    console.log(`exiting ${this.id} scene`);
+    document.removeEventListener('user-choice', this);
+    await this.ui.exitScene('achievements');
   }
 }

@@ -27,7 +27,7 @@
             <div id="splash-close" class="invisible-btn"></div>
             <div id="splash-maximize" class="invisible-btn"></div>
           </header>
-          <section id="eula-container">
+          <section id="eula-container" class="scrollable-contentbox">
             <h2>User License Agreement</h2>
             <p>
               By using our services you acknowledge that everything you do is
@@ -61,7 +61,8 @@
             </p>
           </section>
           <footer class="buttons">
-            <input type="checkbox" id="audioToggle" />
+            <input type="checkbox" id="achievements-button" class="icon-button" />
+            <input type="checkbox" id="audioToggle" class="icon-button" />
             <button id="beginButton" class="play">I Accept</button>
           </footer>
         </div>
@@ -88,6 +89,17 @@
           <footer class="buttons">
             <button id="restartButton" class="play">Play again</button>
           </footer>
+        </div>
+      </section>
+      <section class="layer scene hidden" id="achievements">
+        <div id="achievements-screen">
+          <header>
+            <h2>Endings</h2>
+          </header>
+          <section id="endings-container" class="scrollable-contentbox">
+            <h3 id="endings-progress"></h3>
+            <ul class="check-list" id="endings-list">
+            </ul>
         </div>
       </section>
     </main>
