@@ -507,7 +507,7 @@ li.ending-item {
   padding-inline: 12% 0;
   margin: 0.5em 0;
   background: url('./images/checkbox.png') no-repeat left center;
-  background-size: contain;
+  background-size: 1.2em;
 }
 li.ending-item.checked {
   background-image: url('./images/checkbox_full.png');
