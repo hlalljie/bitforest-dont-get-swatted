@@ -506,9 +506,9 @@ image-animation > img {
 li.ending-item {
   padding-inline: 12% 0;
   margin: 0.5em 0;
-  background: url('./images/checkbox.png') no-repeat left center;
+  background: url('./images/checkbox_unchecked.png') no-repeat left center;
   background-size: 1.2em;
 }
 li.ending-item.checked {
-  background-image: url('./images/checkbox_full.png');
+  background-image: url('./images/checkbox_checked.png');
 }
