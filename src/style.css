@@ -90,6 +90,41 @@ image-animation > img {
 .scene.transitioning {
   opacity: 0.6;
 }
+
+.scrollable-contentbox {
+  padding: 0.5em;
+  font-size: 3vw;
+  overflow-y: visible;
+  flex: auto;
+  font-size: 3vw;
+  overflow-y: scroll;
+  --sb-track-color: #a4a4a4;
+  --sb-thumb-color: #5a5a5a;
+  --sb-size: 19px;
+}
+/* Custom scrollbar */
+
+.scrollable-contentbox::-webkit-scrollbar {
+  width: var(--sb-size);
+  border: 1px solid var(--sb-thumb-color);
+}
+
+.scrollable-contentbox::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 1px;
+}
+
+.scrollable-contentbox::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 1px;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  .scrollable-contentbox {
+    scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
+  }
+}
+
 /*
  * Splash/EULA scene
  */
@@ -113,39 +148,8 @@ image-animation > img {
 }
 
 #eula-container {
-  padding: 0.5em;
   margin: 0.5em;
-  font-size: 3vw;
-  overflow-y: visible;
-  flex: auto;
-  font-size: 3vw;
-  overflow-y: scroll;
-  --sb-track-color: #a4a4a4;
-  --sb-thumb-color: #5a5a5a;
-  --sb-size: 19px;
   border: 2px solid #4d4d4d;
-}
-/* Custom scrollbar */
-
-#eula-container::-webkit-scrollbar {
-  width: var(--sb-size);
-  border: 1px solid var(--sb-thumb-color);
-}
-
-#eula-container::-webkit-scrollbar-track {
-  background: var(--sb-track-color);
-  border-radius: 1px;
-}
-
-#eula-container::-webkit-scrollbar-thumb {
-  background: var(--sb-thumb-color);
-  border-radius: 1px;
-}
-
-@supports not selector(::-webkit-scrollbar) {
-  #eula-container {
-    scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
-  }
 }
 
 #eula-container h2 {
@@ -171,7 +175,7 @@ image-animation > img {
 }
 
 #splash header {
-  margin-top: 1em;
+  margin-top: 5%;
   padding-top: 5%;
   background-image: url('images/window_controls.png');
   background-repeat: no-repeat;
@@ -199,39 +203,46 @@ image-animation > img {
   top: 10%;
   aspect-ratio: 1/1;
 }
-
 #splash footer.buttons {
-  margin-top: 2em;
-  padding: 4em 0;
+  padding: 1.5em 0;
   border-top: 2px solid rgb(73, 73, 73);
   height: 16%;
   box-sizing: border-box;
   display: flex;
   padding-inline: 24px;
   justify-content: space-evenly;
+  align-self: flex-end;
 }
 #splash button {
   border: 3px solid black;
-  font-size: 2.5em;
+  font-size: 1em;
   border-radius: 0;
 }
-#splash button:hover {
+#splash button:hover,
+#splash .icon-button {
   opacity: 0.7;
 }
 
-#audioToggle {
+#splash .icon-button {
   appearance: none;
   margin: 0;
-  width: 10%;
   aspect-ratio: 1/1;
-  background: url('./images/audio-muted.svg') no-repeat;
-  filter: invert(1);
+  display: inline-block;
+  background-size: contain;
 }
-#audioToggle:hover {
-  opacity: 0.7;
+
+#audioToggle {
+  background: url('./images/audio-muted.svg') no-repeat;
+  width: 7vw;
+  filter: invert(1);
 }
 #audioToggle:checked {
   background: url('./images/audio.svg') no-repeat;
+}
+
+#achievements-button {
+  width: 5vw;
+  background: url('./images/trophy.png') no-repeat;
 }
 
 /*
@@ -443,4 +454,60 @@ image-animation > img {
 #wordsLine > .word[selected] {
   outline: 1px solid white;
   padding: 6px;
+}
+
+/*
+ * Achievements scene
+ */
+
+#achievements {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(#db207a, #9547af);
+}
+#achievements-screen {
+  aspect-ratio: 1 / 1;
+  height: 80%;
+  border-radius: 5px;
+  background: rgb(184, 184, 184);
+  display: flex;
+  flex-direction: column;
+}
+#achievements-screen * {
+  color: black;
+}
+#achievements-screen header {
+  padding-inline-start: 10%;
+  padding-block: 0.75em 0.5em;
+  border-bottom: 2px solid rgb(73, 73, 73);
+}
+#achievements-screen h2 {
+  font-size: 1.2em;
+  margin: 0;
+}
+#achievements-screen h3 {
+  font-size: 0.7em;
+  margin: 0;
+  text-align: center;
+}
+
+#endings-container {
+  padding-inline-start: 10%;
+}
+#endings-container #endings-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+li.ending-item {
+  padding-inline: 12% 0;
+  margin: 0.5em 0;
+  background: url('./images/checkbox_unchecked.png') no-repeat left center;
+  background-size: 1.2em;
+}
+li.ending-item.checked {
+  background-image: url('./images/checkbox_checked.png');
 }

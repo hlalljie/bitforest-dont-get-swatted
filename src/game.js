@@ -17,14 +17,13 @@ export class Game {
     this.ui = ui;
     this.currentScene = null;
 
-    const splashScene = new SplashScene(this);
-    const choicesScene = new ChoicesScene(this);
-    const gameoverScene = new GameOverScene(this);
-
     this.scenesMap = new Map();
-    this.scenesMap.set(splashScene.id, splashScene);
-    this.scenesMap.set(choicesScene.id, choicesScene);
-    this.scenesMap.set(gameoverScene.id, gameoverScene);
+    for (let SceneClass of [
+      SplashScene, ChoicesScene, GameOverScene, AchievementsScene
+    ]) {
+      const scene = new SceneClass(this);
+      this.scenesMap.set(scene.id, scene);
+    }
   }
 
   async start() {
@@ -52,6 +51,15 @@ export class Game {
    */
   saveToLocal(saveData, name) {
     localStorage.setItem(name, JSON.stringify(saveData));
+  }
+
+  /**
+   * Fetches data from local storage
+   * @param {string} storageName item name in local storage to get
+   */
+  retrieveFromLocal(name) {
+    let jsonData = localStorage.getItem(name) || '{}';
+    return JSON.parse(jsonData);
   }
 }
 
@@ -122,8 +130,10 @@ class ChoicesScene extends _Scene {
 
     let promiseEntered = this.ui.enterScene(this.id);
     await promiseEntered;
-    this.handleChoice(startPid);
-    document.addEventListener('user-choice', this);
+    const result = await this.handleChoice(startPid);
+    if (result) {
+      document.addEventListener('user-choice', this);
+    }
   }
 
   async exit() {
@@ -147,7 +157,7 @@ class ChoicesScene extends _Scene {
    * Handle a passage choice event
    * @param {number} pid
    */
-  handleChoice(pid) {
+  async handleChoice(pid) {
     // Process id starts at 1, convert to 0 indexing
     let currentPassage = this.twineData.passages[pid - 1];
     let passageName = currentPassage.name;
@@ -156,8 +166,7 @@ class ChoicesScene extends _Scene {
 
     // handle endings switching to game over scene and early-return
     if (outcome.type == 'END') {
-      this.handleEnd(currentPassage, outcome);
-      return;
+      return this.handleEnd(currentPassage, outcome);
     }
     // handle Menu (right now does nothing)
     if (outcome.type == 'MENU') {
@@ -173,6 +182,7 @@ class ChoicesScene extends _Scene {
     // update prompt and wording
     this.ui.updatePrompt(currentPassage.text.split('[[')[0]);
     this.ui.updateWordChoices(currentPassage.links);
+    return true;
   }
 
   /**
@@ -211,7 +221,7 @@ class ChoicesScene extends _Scene {
    * @param {Object} currentPassage the current passage data
    * @param {Object{tag: string, type: string} | null} outcome the outcome data
    */
-  handleEnd(currentPassage, outcome) {
+  async handleEnd(currentPassage, outcome) {
     let passageText = currentPassage.text.split('[[')[0];
     let passageName = currentPassage.name;
 
@@ -225,11 +235,12 @@ class ChoicesScene extends _Scene {
     this.game.saveToLocal(this.saveData.get('endings'), STORAGE_KEYS.ENDINGS);
 
     // switch to game over scene
-    this.game.switchScene('gameover', {
+    await this.game.switchScene('gameover', {
       outcome: outcome,
       ending: passageText,
       passageName: passageName,
     });
+    return false; // let the handleChoice caller know we're done
   }
 
   /**
@@ -263,10 +274,9 @@ class SplashScene extends _Scene {
   id = 'splash';
 
   handleEvent(event) {
-    if (event.type == 'user-choice') {
-      // Advance to next scene
-      console.log('Got user choice:');
-      this.game.switchScene('prompts', { ...event.detail });
+    if (event.type == 'user-choice' && event.detail.loadScreen) {
+      // Advance to indicated scene
+      this.game.switchScene(event.detail.loadScreen, { ...event.detail });
     }
   }
 
@@ -293,14 +303,11 @@ class GameOverScene extends _Scene {
   handleEvent(event) {
     if (event.type == 'user-choice') {
       // Advance to next scene
-      console.log('Got user choice:');
       const nextAction = event.detail.action;
       let startType;
       if (nextAction == 'restart') {
-        // TODO: do we want a new startType here? To ensure we randomize the entry point
-        // and don't repeat the same path through the passages
-        startType = 'default';
-        this.game.switchScene('prompts', { startType });
+        // Go back to the menu/splash scene to restart
+        this.game.switchScene('splash');
       }
     }
   }
@@ -329,5 +336,40 @@ class GameOverScene extends _Scene {
     console.log(`exiting ${this.id} scene`);
     document.removeEventListener('user-choice', this);
     await this.ui.exitScene('gameover');
+  }
+}
+
+class AchievementsScene extends _Scene {
+  id = 'achievements';
+
+  handleEvent(event) {
+    if (event.type == 'user-choice') {
+      // Advance to next scene
+      console.log('Got user choice:');
+      const nextAction = event.detail.action;
+      let startType;
+      if (nextAction == 'restart') {
+        // Go back to the menu/splash scene to restart
+        this.game.switchScene('splash');
+      }
+    }
+  }
+
+  async enter(params) {
+    let savedEndings = this.game.retrieveFromLocal('endings');
+    console.log("retrieveFromLocal('endings')", savedEndings);
+    super.enter();
+    console.log(`entering ${this.id} scene`);
+    this.ui.updateBackground('');
+    this.ui.updateBackgroundAudio();
+
+    await this.ui.enterScene('achievements', { endings: savedEndings });
+    document.addEventListener('user-choice', this);
+  }
+
+  async exit() {
+    console.log(`exiting ${this.id} scene`);
+    document.removeEventListener('user-choice', this);
+    await this.ui.exitScene('achievements');
   }
 }
