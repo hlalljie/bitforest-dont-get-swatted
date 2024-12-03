@@ -297,10 +297,8 @@ class GameOverScene extends _Scene {
       const nextAction = event.detail.action;
       let startType;
       if (nextAction == 'restart') {
-        // TODO: do we want a new startType here? To ensure we randomize the entry point
-        // and don't repeat the same path through the passages
-        startType = 'default';
-        this.game.switchScene('prompts', { startType });
+        // Go back to the menu/splash scene to restart
+        this.game.switchScene('splash');
       }
     }
   }
