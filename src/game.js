@@ -130,8 +130,10 @@ class ChoicesScene extends _Scene {
 
     let promiseEntered = this.ui.enterScene(this.id);
     await promiseEntered;
-    this.handleChoice(startPid);
-    document.addEventListener('user-choice', this);
+    const result = await this.handleChoice(startPid);
+    if (result) {
+      document.addEventListener('user-choice', this);
+    }
   }
 
   async exit() {
@@ -155,7 +157,7 @@ class ChoicesScene extends _Scene {
    * Handle a passage choice event
    * @param {number} pid
    */
-  handleChoice(pid) {
+  async handleChoice(pid) {
     // Process id starts at 1, convert to 0 indexing
     let currentPassage = this.twineData.passages[pid - 1];
     let passageName = currentPassage.name;
@@ -164,8 +166,7 @@ class ChoicesScene extends _Scene {
 
     // handle endings switching to game over scene and early-return
     if (outcome.type == 'END') {
-      this.handleEnd(currentPassage, outcome);
-      return;
+      return this.handleEnd(currentPassage, outcome);
     }
     // handle Menu (right now does nothing)
     if (outcome.type == 'MENU') {
@@ -181,6 +182,7 @@ class ChoicesScene extends _Scene {
     // update prompt and wording
     this.ui.updatePrompt(currentPassage.text.split('[[')[0]);
     this.ui.updateWordChoices(currentPassage.links);
+    return true;
   }
 
   /**
@@ -219,7 +221,7 @@ class ChoicesScene extends _Scene {
    * @param {Object} currentPassage the current passage data
    * @param {Object{tag: string, type: string} | null} outcome the outcome data
    */
-  handleEnd(currentPassage, outcome) {
+  async handleEnd(currentPassage, outcome) {
     let passageText = currentPassage.text.split('[[')[0];
     let passageName = currentPassage.name;
 
@@ -233,11 +235,12 @@ class ChoicesScene extends _Scene {
     this.game.saveToLocal(this.saveData.get('endings'), STORAGE_KEYS.ENDINGS);
 
     // switch to game over scene
-    this.game.switchScene('gameover', {
+    await this.game.switchScene('gameover', {
       outcome: outcome,
       ending: passageText,
       passageName: passageName,
     });
+    return false; // let the handleChoice caller know we're done
   }
 
   /**
