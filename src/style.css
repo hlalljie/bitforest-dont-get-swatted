@@ -175,7 +175,7 @@ image-animation > img {
 }
 
 #splash header {
-  margin-top: 1em;
+  margin-top: 5%;
   padding-top: 5%;
   background-image: url('images/window_controls.png');
   background-repeat: no-repeat;
@@ -203,20 +203,19 @@ image-animation > img {
   top: 10%;
   aspect-ratio: 1/1;
 }
-
 #splash footer.buttons {
-  margin-top: 2em;
-  padding: 4em 0;
+  padding: 1.5em 0;
   border-top: 2px solid rgb(73, 73, 73);
   height: 16%;
   box-sizing: border-box;
   display: flex;
   padding-inline: 24px;
   justify-content: space-evenly;
+  align-self: flex-end;
 }
 #splash button {
   border: 3px solid black;
-  font-size: 2.5em;
+  font-size: 1em;
   border-radius: 0;
 }
 #splash button:hover,
