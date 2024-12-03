@@ -204,19 +204,21 @@ image-animation > img {
   aspect-ratio: 1/1;
 }
 #splash footer.buttons {
-  padding: 1.5em 0;
+  padding: 2px 24px;
   border-top: 2px solid rgb(73, 73, 73);
-  height: 16%;
+  /* height: 16%; */
   box-sizing: border-box;
   display: flex;
-  padding-inline: 24px;
+  /* padding-inline: 24px; */
   justify-content: space-evenly;
   align-self: flex-end;
   width: 100%;
+  aspect-ratio: 10/1;
 }
 #splash button {
   border: 3px solid black;
-  font-size: 1em;
+  font-size: 3vw;
+  padding: 1.4vw;
   border-radius: 0;
 }
 #splash button:hover,
@@ -233,8 +235,9 @@ image-animation > img {
 }
 
 #audioToggle {
+  height: 65%;
+  min-height: 32px;
   background: url('./images/audio-muted.svg') no-repeat;
-  width: 7vw;
   filter: invert(1);
 }
 #audioToggle:checked {
@@ -242,7 +245,8 @@ image-animation > img {
 }
 
 #achievements-button {
-  width: 5vw;
+  height: 50%;
+  min-height: 25px;
   background: url('./images/trophy.png') no-repeat;
 }
 
