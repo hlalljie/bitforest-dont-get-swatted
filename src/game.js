@@ -19,7 +19,10 @@ export class Game {
 
     this.scenesMap = new Map();
     for (let SceneClass of [
-      SplashScene, ChoicesScene, GameOverScene, AchievementsScene
+      SplashScene,
+      ChoicesScene,
+      GameOverScene,
+      AchievementsScene,
     ]) {
       const scene = new SceneClass(this);
       this.scenesMap.set(scene.id, scene);
@@ -200,6 +203,9 @@ class ChoicesScene extends _Scene {
     } else if (tags.includes('Neutral-End')) {
       this.outcomes.neutralEnd += 1;
       return { tag: 'Neutral-End', type: 'END' };
+    } else if (tags.includes('Egg-end')) {
+      this.outcomes.egg += 1;
+      return { tag: 'Egg-end', type: 'END' };
     } else if (tags.includes('Neutral-Path')) {
       this.outcomes.neutral += 1;
       return { tag: 'Neutral-Path', type: 'PATH' };
@@ -208,7 +214,7 @@ class ChoicesScene extends _Scene {
       return { tag: 'GOOD', type: 'PATH' };
     } else if (tags.includes('EGG')) {
       this.outcomes.egg += 1;
-      return { tag: 'EGG', type: 'END' };
+      return { tag: 'EGG', type: 'PATH' };
     } else if (tags.includes('Menu-page')) {
       return { tag: 'Menu-page', type: 'MENU' };
     }
