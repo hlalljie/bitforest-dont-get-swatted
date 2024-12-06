@@ -1,10 +1,11 @@
 {
+  "Easter eggs end 2 Arsenic": "images/apt_end.png",
   "Neutral start": "images/main_background.png",
   "default": "images/main_background.png",
   "GOOD": "images/main_background.png",
   "EGG": "images/main_background.png",
   "BAD-END": "images/bad_end_1.png",
-  "Egg-end": "images/bad_end_2.png",
+  "Egg-End": "images/bad_end_2.png",
   "Neutral-Path": "images/main_background.png",
   "Neutral-End": "images/apt_end.png",
   "Good-End": "images/camp_end.png",

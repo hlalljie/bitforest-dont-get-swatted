@@ -203,9 +203,9 @@ class ChoicesScene extends _Scene {
     } else if (tags.includes('Neutral-End')) {
       this.outcomes.neutralEnd += 1;
       return { tag: 'Neutral-End', type: 'END' };
-    } else if (tags.includes('Egg-end')) {
+    } else if (tags.includes('Egg-End')) {
       this.outcomes.egg += 1;
-      return { tag: 'Egg-end', type: 'END' };
+      return { tag: 'Egg-End', type: 'END' };
     } else if (tags.includes('Neutral-Path')) {
       this.outcomes.neutral += 1;
       return { tag: 'Neutral-Path', type: 'PATH' };
